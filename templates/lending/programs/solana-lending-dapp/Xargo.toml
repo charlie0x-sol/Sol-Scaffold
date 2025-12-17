@@ -1,0 +1,15 @@
+[package]
+name = "solana-lending-dapp"
+version = "0.1.0"
+authors = ["solana-labs"]
+edition = "2018"
+
+[lib]
+name = "solana_lending_dapp"
+path = "src/lib.rs"
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+anchor-lang = "0.24.2"
+anchor-spl = "0.24.2"
+spl-token = { version = "3.2.0", features = ["no-entrypoint"] }
