@@ -1,3 +1,5 @@
+"use client";
+
 import { FC, useState } from 'react';
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, web3, BN } from '@project-serum/anchor';
@@ -5,7 +7,7 @@ import { PublicKey } from '@solana/web3.js';
 // In a real project, you would import the IDL here
 // import idl from '../idl.json';
 
-const PROGRAM_ID = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+const PROGRAM_ID = new PublicKey("<%= programId %>");
 
 export const SwapForm: FC = () => {
   const [amountIn, setAmountIn] = useState('');

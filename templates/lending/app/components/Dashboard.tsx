@@ -1,9 +1,11 @@
+"use client";
+
 import { FC, useState } from 'react';
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, BN } from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 
-const PROGRAM_ID = new PublicKey("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+const PROGRAM_ID = new PublicKey("<%= programId %>");
 
 export const Dashboard: FC = () => {
   const [depositAmount, setDepositAmount] = useState('');

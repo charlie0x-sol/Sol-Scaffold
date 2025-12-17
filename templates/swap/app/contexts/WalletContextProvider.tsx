@@ -1,9 +1,11 @@
+"use client";
+
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { useMemo } from 'react';
 
-import('@solana/wallet-adapter-react-ui/styles.css' as any);
+require('@solana/wallet-adapter-react-ui/styles.css');
 
 export const WalletContextProvider = ({ children }) => {
   const endpoint = useMemo(() => 'http://127.0.0.1:8899', []);
