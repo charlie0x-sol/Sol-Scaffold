@@ -10,13 +10,13 @@ npm install -g sol-scaffold
 
 ## Usage
 
-### Interactive Mode (Recommended)
+### Commands
 
-Simply run the `new` command, and `sol-scaffold` will guide you through the process:
+*   `sol-scaffold new`: Create a new project (interactive or with arguments).
+*   `sol-scaffold list`: List all available DeFi primitives.
+*   `sol-scaffold doctor`: Check if you have all necessary tools installed (Solana, Anchor, Rust, etc.).
 
-```bash
-sol-scaffold new
-```
+### Creating a New Project (Interactive Mode)
 
 You will be prompted to:
 1.  **Select a DeFi primitive:** Choose from `swap`, `lending`, or `staking`.

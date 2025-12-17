@@ -1,20 +1,25 @@
 import { Command } from 'commander';
-import fse from 'fs-extra';
+import _fse from 'fs-extra';
+const fse = _fse;
+import { readdir } from 'fs/promises';
+import { existsSync } from 'fs';
 import * as path from 'path';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
+import ora from 'ora';
 
 import { getTemplateDir } from '../utils/paths.js';
-import { copyTemplate, customizeTemplate, installDependencies } from '../utils/files.js';
+import { copyTemplate, customizeDirectory, installDependencies, generateKeyPair } from '../utils/files.js';
 
 export const newCommand = new Command('new')
   .description('Create a new Solana dApp from a template')
   .argument('[primitive]', 'The primitive to scaffold')
   .argument('[name]', 'The name of the project')
-  .action(async (primitive, name) => {
+  .option('--no-install', 'Skip dependency installation')
+  .action(async (primitive, name, options) => {
     const templatesDir = getTemplateDir();
-    const availableTemplates = await fse.readdir(templatesDir);
+    const availableTemplates = await readdir(templatesDir);
 
     if (!primitive) {
       const answers = await inquirer.prompt([
@@ -50,45 +55,64 @@ export const newCommand = new Command('new')
     }
 
     const destDir = path.join(process.cwd(), name);
-    if (fse.existsSync(destDir)) {
+    if (existsSync(destDir)) {
       console.error(chalk.red(`Error: Directory '${name}' already exists.`));
       return;
     }
 
-    console.log(chalk.blue(`Creating a new ${primitive} dApp named ${name}`));
+    const spinner = ora(`Scaffolding ${primitive} dApp in ${name}...`).start();
 
     const templateDir = path.join(getTemplateDir(), primitive);
 
     try {
+      spinner.text = 'Copying template files...';
       await copyTemplate(templateDir, destDir);
-      await customizeTemplate(path.join(destDir, 'package.json'), name);
-      console.log(chalk.blue('Installing dependencies...'));
-      await installDependencies(destDir);
-      console.log(chalk.green('Project created successfully!'));
-
+      
+      spinner.text = 'Generating program keypair...';
+      const deployDir = path.join(destDir, 'target', 'deploy');
+      await fse.ensureDir(deployDir);
+      
+      const keypairPath = path.join(deployDir, 'program-keypair.json');
+      let programId = 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS';
       try {
-        execSync('anchor --version', { stdio: 'ignore' });
-      } catch {
-        console.log(chalk.yellow('\nWarning: Anchor CLI not found. You will need it to build your project.'));
-        console.log('Install it here: https://www.anchor-lang.com/docs/installation');
+        programId = await generateKeyPair(keypairPath);
+      } catch (e) {
+        spinner.warn('Could not generate a new program keypair. Using default ID.');
       }
 
-      try {
-        execSync('solana --version', { stdio: 'ignore' });
-      } catch {
-        console.log(chalk.yellow('\nWarning: Solana CLI not found.'));
-        console.log('Install it here: https://docs.solana.com/cli/install-solana-cli-tools');
+      spinner.text = 'Customizing project...';
+      const replacements = {
+        projectName: name,
+        programId: programId,
+      };
+      await customizeDirectory(destDir, replacements);
+
+      if (options.install) {
+        spinner.text = 'Installing dependencies (this may take a minute)...';
+        await installDependencies(destDir);
+      } else {
+        spinner.info('Skipping dependency installation.');
+      }
+      
+      spinner.succeed(chalk.green('Project created successfully!'));
+
+      // Check for tools
+      const missingTools = [];
+      try { execSync('anchor --version', { stdio: 'ignore' }); } catch { missingTools.push('Anchor CLI'); }
+      try { execSync('solana --version', { stdio: 'ignore' }); } catch { missingTools.push('Solana CLI'); }
+      
+      if (missingTools.length > 0) {
+        console.log(chalk.yellow(`\nWarning: The following tools are missing: ${missingTools.join(', ')}`));
+        console.log('You will need them to build and deploy your project.');
       }
 
       console.log('\nNext steps:');
-      console.log(`  cd ${name}`);
-      console.log('  solana-test-validator (in a separate terminal)');
-      console.log('  anchor build');
-      console.log('  (Don\'t forget to update declare_id! in lib.rs and Anchor.toml with your new program ID)');
-      console.log('  anchor deploy');
-      console.log('  anchor test');
+      console.log(`  ${chalk.blue(`cd ${name}`)}`);
+      console.log(`  ${chalk.blue('anchor build')}`);
+      console.log(`  ${chalk.blue('anchor test')}`);
+      console.log('\nHappy coding!');
     } catch (err) {
-      console.error(chalk.red('An unexpected error occurred.'));
+      spinner.fail(chalk.red('An unexpected error occurred.'));
       if (err instanceof Error) {
         console.error(chalk.red(err.message));
       }
