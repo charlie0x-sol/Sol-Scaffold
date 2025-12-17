@@ -1,12 +1,12 @@
 [package]
-name = "solana-staking-dapp"
+name = "<%= programName %>"
 version = "0.1.0"
 description = "Solana Staking Template"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "solana_staking_dapp"
+name = "<%= programNameSnakeCase %>"
 
 [features]
 no-entrypoint = []

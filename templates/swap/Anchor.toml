@@ -1,7 +1,7 @@
 [features]
 seeds = false
 [programs.localnet]
-solana_swap_dapp = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+<%= programNameSnakeCase %> = "<%= programId %>"
 
 [registry]
 url = "https://anchor.projectserum.com"

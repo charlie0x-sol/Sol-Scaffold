@@ -1,12 +1,12 @@
 [package]
-name = "solana-swap-dapp"
+name = "<%= programName %>"
 version = "0.1.0"
 description = "Solana Swap Template"
 edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "lib"]
-name = "solana_swap_dapp"
+name = "<%= programNameSnakeCase %>"
 
 [features]
 no-entrypoint = []
