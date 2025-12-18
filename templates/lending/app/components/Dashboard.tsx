@@ -1,5 +1,3 @@
-"use client";
-
 import { FC, useState } from 'react';
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
 import { Program, AnchorProvider, BN } from '@project-serum/anchor';

@@ -1,5 +1,3 @@
-"use client";
-
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { FC } from 'react';
 
