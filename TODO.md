@@ -40,3 +40,15 @@
     - [x] Implement Time-based Reward logic and User Stake tracking.
     - [x] Build Staking Dashboard UI with Stake/Unstake/Init functions.
     - [x] Update tests.
+
+## Phase 6: Modular Scaffolding (Planned)
+
+- [ ] **Add CLI Flags:** Implement `--program-only` and `--frontend-only` in `commander`.
+- [ ] **Logic Separation:** Update `copyTemplate` and `customizeDirectory` to handle partial project generation.
+- [ ] **Dynamic Instructions:** Update "Next Steps" output based on the selected mode.
+
+## Phase 7: UI & Template Polish (Upcoming)
+
+- [ ] **Tailwind/Shadcn Refactor:** Bring professional UI components to the Pages Router templates.
+- [ ] **Add NFT Marketplace:** New comprehensive primitive template.
+- [ ] **Add DAO/Governance:** New comprehensive primitive template.
