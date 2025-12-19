@@ -54,6 +54,7 @@ sol-scaffold new staking my-staking-dapp --git
 *   **Swap:** A basic AMM-style token swap implementation.
 *   **Lending:** A simple lending and borrowing protocol with collateral management.
 *   **Staking:** A template for staking tokens to earn rewards.
+*   **Governance:** A feature-complete DAO primitive with proposals and weighted voting.
 
 ## Generated Project Structure
 
