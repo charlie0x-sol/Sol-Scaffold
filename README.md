@@ -15,11 +15,13 @@ npm install -g sol-scaffold
 *   `sol-scaffold new`: Create a new project (interactive or with arguments).
 *   `sol-scaffold list`: List all available DeFi primitives.
 *   `sol-scaffold doctor`: Check if you have all necessary tools installed (Solana, Anchor, Rust, etc.).
+*   `sol-scaffold clean`: Recursively remove build artifacts (`node_modules`, `target`, etc.) to free up disk space.
+*   `sol-scaffold sync`: Automatically sync Program IDs from `target/deploy` to `lib.rs`, `Anchor.toml`, and the frontend code.
 
 ### Creating a New Project (Interactive Mode)
 
 You will be prompted to:
-1.  **Select a DeFi primitive:** Choose from `swap`, `lending`, or `staking`.
+1.  **Select a DeFi primitive:** Choose from `swap`, `lending`, `staking`, or `governance`.
 2.  **Name your project:** Provide a name for your new dApp.
 
 ### Command Line Arguments
@@ -39,14 +41,14 @@ sol-scaffold new <primitive> <project-name> [options]
 **Examples:**
 
 ```bash
-# Scaffold a token swap dApp
-sol-scaffold new swap my-swap-dapp
+# Scaffold a feature-complete DAO
+sol-scaffold new governance my-dao
 
-# Preview project creation without writing to disk
-sol-scaffold new lending my-lending-protocol --dry-run
+# Sync program IDs after a fresh build
+sol-scaffold sync
 
-# Scaffold a staking dApp and initialize a git repo
-sol-scaffold new staking my-staking-dapp --git
+# Clean up space in a project
+sol-scaffold clean my-dao
 ```
 
 ## Available Templates
