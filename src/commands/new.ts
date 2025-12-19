@@ -18,6 +18,7 @@ export const newCommand = new Command('new')
   .argument('[name]', 'The name of the project')
   .option('--no-install', 'Skip dependency installation')
   .option('--git', 'Initialize a git repository')
+  .option('-d, --dry-run', 'Preview changes without modifying the disk')
   .action(async (primitive, name, options) => {
     const templatesDir = getTemplateDir();
     const availableTemplates = await readdir(templatesDir);
@@ -56,29 +57,45 @@ export const newCommand = new Command('new')
     }
 
     const destDir = path.join(process.cwd(), name);
-    if (existsSync(destDir)) {
+    if (!options.dryRun && existsSync(destDir)) {
       console.error(chalk.red(`Error: Directory '${name}' already exists.`));
       return;
     }
 
-    const spinner = ora(`Scaffolding ${primitive} dApp in ${name}...`).start();
+    if (options.dryRun) {
+      console.log(chalk.cyan('\n--- DRY RUN MODE ---'));
+      console.log(chalk.gray('No files will be written to disk.\n'));
+    }
+
+    const spinner = ora(`${options.dryRun ? '[Dry Run] ' : ''}Scaffolding ${primitive} dApp in ${name}...`).start();
 
     const templateDir = path.join(getTemplateDir(), primitive);
 
     try {
       spinner.text = 'Copying template files...';
-      await copyTemplate(templateDir, destDir);
+      if (!options.dryRun) {
+        await copyTemplate(templateDir, destDir);
+      } else {
+        spinner.info(`[Dry Run] Would copy template from ${templateDir} to ${destDir}`);
+        spinner.start();
+      }
       
       spinner.text = 'Generating program keypair...';
       const deployDir = path.join(destDir, 'target', 'deploy');
-      await fse.ensureDir(deployDir);
-      
-      const keypairPath = path.join(deployDir, 'program-keypair.json');
       let programId = 'Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS';
-      try {
-        programId = await generateKeyPair(keypairPath);
-      } catch (e) {
-        spinner.warn('Could not generate a new program keypair. Using default ID.');
+
+      if (!options.dryRun) {
+        await fse.ensureDir(deployDir);
+        const keypairPath = path.join(deployDir, 'program-keypair.json');
+        try {
+          programId = await generateKeyPair(keypairPath);
+        } catch (e) {
+          spinner.warn('Could not generate a new program keypair. Using default ID.');
+        }
+      } else {
+        programId = 'DRY_RUN_PROGRAM_ID_11111111111111111111111';
+        spinner.info(`[Dry Run] Would generate keypair at ${path.join(deployDir, 'program-keypair.json')}`);
+        spinner.start();
       }
 
       spinner.text = 'Customizing project...';
@@ -87,14 +104,19 @@ export const newCommand = new Command('new')
       const programName = name.replace(/-/g, '_'); // Default to snake_case for the folder/crate
       const programNameKebab = name.replace(/_/g, '-');
       
-      const programsPath = path.join(destDir, 'programs');
-      const programFolders = await readdir(programsPath);
-      if (programFolders.length > 0) {
-          const oldProgramFolder = programFolders[0];
-          if (oldProgramFolder) {
-              const newProgramPath = path.join(programsPath, programNameKebab);
-              await fse.rename(path.join(programsPath, oldProgramFolder), newProgramPath);
-          }
+      if (!options.dryRun) {
+        const programsPath = path.join(destDir, 'programs');
+        const programFolders = await readdir(programsPath);
+        if (programFolders.length > 0) {
+            const oldProgramFolder = programFolders[0];
+            if (oldProgramFolder) {
+                const newProgramPath = path.join(programsPath, programNameKebab);
+                await fse.rename(path.join(programsPath, oldProgramFolder), newProgramPath);
+            }
+        }
+      } else {
+        spinner.info(`[Dry Run] Would rename program folder to ${programNameKebab}`);
+        spinner.start();
       }
 
       const replacements = {
@@ -103,44 +125,63 @@ export const newCommand = new Command('new')
         programNameSnakeCase: programName,
         programId: programId,
       };
-      await customizeDirectory(destDir, replacements);
+
+      if (!options.dryRun) {
+        await customizeDirectory(destDir, replacements);
+      } else {
+        spinner.info('[Dry Run] Would customize project files with:');
+        console.log(JSON.stringify(replacements, null, 2));
+        spinner.start();
+      }
 
       if (options.install) {
-        spinner.text = 'Installing dependencies (this may take a minute)...';
-        await installDependencies(destDir);
+        if (!options.dryRun) {
+          spinner.text = 'Installing dependencies (this may take a minute)...';
+          await installDependencies(destDir);
+        } else {
+          spinner.info('[Dry Run] Would install dependencies');
+          spinner.start();
+        }
       } else {
         spinner.info('Skipping dependency installation.');
       }
 
       if (options.git) {
-        spinner.text = 'Initializing git repository...';
-        try {
-          execSync('git init', { cwd: destDir, stdio: 'ignore' });
-          execSync('git add .', { cwd: destDir, stdio: 'ignore' });
-          execSync('git commit -m "Initial commit from sol-scaffold"', { cwd: destDir, stdio: 'ignore' });
-          spinner.info('Git repository initialized.');
-        } catch (e) {
-          spinner.warn('Could not initialize git repository.');
+        if (!options.dryRun) {
+          spinner.text = 'Initializing git repository...';
+          try {
+            execSync('git init', { cwd: destDir, stdio: 'ignore' });
+            execSync('git add .', { cwd: destDir, stdio: 'ignore' });
+            execSync('git commit -m "Initial commit from sol-scaffold"', { cwd: destDir, stdio: 'ignore' });
+            spinner.info('Git repository initialized.');
+          } catch (e) {
+            spinner.warn('Could not initialize git repository.');
+          }
+        } else {
+          spinner.info('[Dry Run] Would initialize git repository');
+          spinner.start();
         }
       }
       
-      spinner.succeed(chalk.green('Project created successfully!'));
+      spinner.succeed(chalk.green(`Project ${options.dryRun ? 'previewed' : 'created'} successfully!`));
 
-      // Check for tools
-      const missingTools = [];
-      try { execSync('anchor --version', { stdio: 'ignore' }); } catch { missingTools.push('Anchor CLI'); }
-      try { execSync('solana --version', { stdio: 'ignore' }); } catch { missingTools.push('Solana CLI'); }
-      
-      if (missingTools.length > 0) {
-        console.log(chalk.yellow(`\nWarning: The following tools are missing: ${missingTools.join(', ')}`));
-        console.log('You will need them to build and deploy your project.');
+      if (!options.dryRun) {
+        // Check for tools
+        const missingTools = [];
+        try { execSync('anchor --version', { stdio: 'ignore' }); } catch { missingTools.push('Anchor CLI'); }
+        try { execSync('solana --version', { stdio: 'ignore' }); } catch { missingTools.push('Solana CLI'); }
+        
+        if (missingTools.length > 0) {
+          console.log(chalk.yellow(`\nWarning: The following tools are missing: ${missingTools.join(', ')}`));
+          console.log('You will need them to build and deploy your project.');
+        }
+
+        console.log('\nNext steps:');
+        console.log(`  ${chalk.blue(`cd ${name}`)}`);
+        console.log(`  ${chalk.blue('anchor build')}`);
+        console.log(`  ${chalk.blue('anchor test')}`);
+        console.log('\nHappy coding!');
       }
-
-      console.log('\nNext steps:');
-      console.log(`  ${chalk.blue(`cd ${name}`)}`);
-      console.log(`  ${chalk.blue('anchor build')}`);
-      console.log(`  ${chalk.blue('anchor test')}`);
-      console.log('\nHappy coding!');
     } catch (err) {
       spinner.fail(chalk.red('An unexpected error occurred.'));
       if (err instanceof Error) {

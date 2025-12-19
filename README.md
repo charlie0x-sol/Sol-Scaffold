@@ -27,8 +27,14 @@ You will be prompted to:
 You can also provide arguments directly to skip the prompts:
 
 ```bash
-sol-scaffold new <primitive> <project-name>
+sol-scaffold new <primitive> <project-name> [options]
 ```
+
+**Options:**
+
+*   `-d, --dry-run`: Preview changes (file creation, variable replacements) without modifying the disk.
+*   `--git`: Initialize a git repository in the new project.
+*   `--no-install`: Skip automatic dependency installation.
 
 **Examples:**
 
@@ -36,8 +42,11 @@ sol-scaffold new <primitive> <project-name>
 # Scaffold a token swap dApp
 sol-scaffold new swap my-swap-dapp
 
-# Scaffold a lending protocol
-sol-scaffold new lending my-lending-protocol
+# Preview project creation without writing to disk
+sol-scaffold new lending my-lending-protocol --dry-run
+
+# Scaffold a staking dApp and initialize a git repo
+sol-scaffold new staking my-staking-dapp --git
 ```
 
 ## Available Templates
