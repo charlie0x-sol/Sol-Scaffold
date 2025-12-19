@@ -44,6 +44,12 @@ sol-scaffold new <primitive> <project-name> [options]
 # Scaffold a feature-complete DAO
 sol-scaffold new governance my-dao
 
+# Scaffold a token swap dApp
+sol-scaffold new swap my-swap-dapp
+
+# Scaffold a staking dApp
+sol-scaffold new staking my-staking-dapp
+
 # Sync program IDs after a fresh build
 sol-scaffold sync
 
