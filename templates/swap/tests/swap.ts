@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { SolanaSwapDapp } from "../target/types/solana_swap_dapp";
+import { <%= programNamePascalCase %> } from "../target/types/<%= programNameSnakeCase %>";
 import { assert } from "chai";
 import { 
   TOKEN_PROGRAM_ID, 
@@ -10,11 +10,12 @@ import {
   getAccount 
 } from "@solana/spl-token";
 
-describe("solana-swap-dapp", () => {
+describe("<%= programName %>", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
 
-  const program = anchor.workspace.SolanaSwapDapp as Program<SolanaSwapDapp>;
+  const program = anchor.workspace.<%= programNamePascalCase %> as Program<<%= programNamePascalCase %>>;
+
 
   let mintA: anchor.web3.PublicKey;
   let mintB: anchor.web3.PublicKey;

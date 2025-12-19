@@ -8,6 +8,10 @@ import { listCommand } from './commands/list.js';
 
 import { doctorCommand } from './commands/doctor.js';
 
+import { cleanCommand } from './commands/clean.js';
+
+import { syncCommand } from './commands/sync.js';
+
 
 
 const program = new Command();
@@ -29,6 +33,10 @@ program.addCommand(newCommand);
 program.addCommand(listCommand);
 
 program.addCommand(doctorCommand);
+
+program.addCommand(cleanCommand);
+
+program.addCommand(syncCommand);
 
 
 

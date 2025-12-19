@@ -32,8 +32,9 @@ A polished UI that uses the shared `AppBar` and `WalletContextProvider`:
 - Add specific variable replacements for DAO authority and treasury addresses.
 
 ## 5. Implementation Phases
-1. **Phase A**: Scaffolding the directory structure and Anchor boilerplate.
-2. **Phase B**: Developing the Rust program logic (`lib.rs`).
-3. **Phase C**: Writing the full test suite to verify the logic.
-4. **Phase D**: Building the Next.js components and connecting to the program.
-5. **Phase E**: Final end-to-end verification and CLI registration.
+1. **Phase A**: Scaffolding the directory structure and Anchor boilerplate. [COMPLETED]
+2. **Phase B**: Developing the Rust program logic (`lib.rs`). [COMPLETED]
+3. **Phase C**: Writing the full test suite to verify the logic. [COMPLETED]
+4. **Phase D**: Building the Next.js components and connecting to the program. [COMPLETED]
+5. **Phase E**: Final end-to-end verification and CLI registration. [COMPLETED]
+

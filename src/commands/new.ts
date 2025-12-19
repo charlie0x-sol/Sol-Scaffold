@@ -110,6 +110,10 @@ export const newCommand = new Command('new')
       // Handle program renaming
       const programName = name.replace(/-/g, '_'); // Default to snake_case for the folder/crate
       const programNameKebab = name.replace(/_/g, '-');
+      const programNamePascalCase = name
+        .split(/[-_]/)
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
       
       if (!options.dryRun) {
         const programsPath = path.join(destDir, 'programs');
@@ -130,6 +134,7 @@ export const newCommand = new Command('new')
         projectName: name,
         programName: programNameKebab,
         programNameSnakeCase: programName,
+        programNamePascalCase: programNamePascalCase,
         programId: programId,
       };
 
