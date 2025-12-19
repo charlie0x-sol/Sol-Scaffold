@@ -21,7 +21,7 @@ export const newCommand = new Command('new')
   .option('-d, --dry-run', 'Preview changes without modifying the disk')
   .action(async (primitive, name, options) => {
     const templatesDir = getTemplateDir();
-    const availableTemplates = await readdir(templatesDir);
+    const availableTemplates = (await readdir(templatesDir)).filter(t => !t.startsWith('_'));
 
     if (!primitive) {
       const answers = await inquirer.prompt([
@@ -70,12 +70,19 @@ export const newCommand = new Command('new')
     const spinner = ora(`${options.dryRun ? '[Dry Run] ' : ''}Scaffolding ${primitive} dApp in ${name}...`).start();
 
     const templateDir = path.join(getTemplateDir(), primitive);
+    const sharedDir = path.join(getTemplateDir(), '_shared');
 
     try {
       spinner.text = 'Copying template files...';
       if (!options.dryRun) {
+        // Copy shared files first
+        if (existsSync(sharedDir)) {
+          await copyTemplate(sharedDir, destDir);
+        }
+        // Copy primitive specific files (overwrites shared if needed)
         await copyTemplate(templateDir, destDir);
       } else {
+        spinner.info(`[Dry Run] Would copy shared template from ${sharedDir} to ${destDir}`);
         spinner.info(`[Dry Run] Would copy template from ${templateDir} to ${destDir}`);
         spinner.start();
       }
