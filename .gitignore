@@ -27,3 +27,8 @@ PLAN.md
 ROADMAP.md
 RESEARCH.md
 TEST.md
+stress-test-env*
+user-demo-session/
+test-integration-run/
+test-gov-run/
+build-test-old/

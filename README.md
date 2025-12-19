@@ -1,113 +1,109 @@
 # sol-scaffold
 
-A powerful CLI tool to scaffold common DeFi primitives on the Solana blockchain, helping you bootstrap your dApp development in seconds.
+**The ultimate CLI for bootstrapping production-ready Solana DeFi applications.**
 
-## Installation
+`sol-scaffold` is more than just a template generator; it's a comprehensive development suite designed to take you from "idea" to "tested integration" in minutes.
+
+## 🛠 The Toolkit
+
+We organize our tools into three pillars to support your entire development lifecycle:
+
+| Pillar | Command | Description |
+| :--- | :--- | :--- |
+| **1. Blueprints** | `sol-scaffold new` | Scaffold fully-featured DeFi primitives (Smart Contract + UI + Tests). |
+| **2. Test Suite** | `sol-scaffold integration` | Inject a mainnet-forking integration test environment into your project. |
+| **3. Utilities** | `doctor`, `sync`, `clean` | Essential tools to keep your workspace healthy and synchronized. |
+
+---
+
+## 🚀 Getting Started
+
+### Installation
 
 ```bash
 npm install -g sol-scaffold
 ```
 
-## Usage
-
-### Commands
-
-*   `sol-scaffold new`: Create a new project (interactive or with arguments).
-*   `sol-scaffold list`: List all available DeFi primitives.
-*   `sol-scaffold doctor`: Check if you have all necessary tools installed (Solana, Anchor, Rust, etc.).
-*   `sol-scaffold clean`: Recursively remove build artifacts (`node_modules`, `target`, etc.) to free up disk space.
-*   `sol-scaffold sync`: Automatically sync Program IDs from `target/deploy` to `lib.rs`, `Anchor.toml`, and the frontend code.
-
-### Creating a New Project (Interactive Mode)
-
-You will be prompted to:
-1.  **Select a DeFi primitive:** Choose from `swap`, `lending`, `staking`, or `governance`.
-2.  **Name your project:** Provide a name for your new dApp.
-
-### Command Line Arguments
-
-You can also provide arguments directly to skip the prompts:
-
+### Quick Verify
+Ensure your environment is ready for Solana development:
 ```bash
-sol-scaffold new <primitive> <project-name> [options]
+sol-scaffold doctor
 ```
 
-**Options:**
+---
 
-*   `-d, --dry-run`: Preview changes (file creation, variable replacements) without modifying the disk.
-*   `--git`: Initialize a git repository in the new project.
-*   `--no-install`: Skip automatic dependency installation.
+## 🏗 Pillar 1: DeFi Blueprints
 
-**Examples:**
+Don't start from an empty folder. Generate a working, full-stack dApp with one command.
 
 ```bash
-# Scaffold a feature-complete DAO
-sol-scaffold new governance my-dao
-
-# Scaffold a token swap dApp
-sol-scaffold new swap my-swap-dapp
-
-# Scaffold a staking dApp
-sol-scaffold new staking my-staking-dapp
-
-# Sync program IDs after a fresh build
-sol-scaffold sync
-
-# Clean up space in a project
-sol-scaffold clean my-dao
+sol-scaffold new <blueprint> <project-name>
 ```
 
-## Available Templates
+### Available Blueprints
 
-*   **Swap:** A basic AMM-style token swap implementation.
-*   **Lending:** A simple lending and borrowing protocol with collateral management.
-*   **Staking:** A template for staking tokens to earn rewards.
-*   **Governance:** A feature-complete DAO primitive with proposals and weighted voting.
+*   **`swap`**
+    *   *What it is:* An AMM-style token swap protocol.
+    *   *Includes:* Liquidity pools, swap logic, slippage handling.
+*   **`lending`**
+    *   *What it is:* A collateralized lending and borrowing platform.
+    *   *Includes:* Deposits, collateral management, borrowing limits, interest accrual.
+*   **`staking`**
+    *   *What it is:* A reward-based staking system.
+    *   *Includes:* Staking pools, reward calculation per block/second, claiming logic.
+*   **`governance`**
+    *   *What it is:* A complete DAO infrastructure.
+    *   *Includes:* Proposal creation, weighted voting (SPL tokens), execution thresholds.
 
-## Generated Project Structure
+### What You Get
+Every new project includes:
+- **Rust/Anchor Program:** Well-commented, safe, and idiomatic smart contract code.
+- **Next.js Frontend:** A React UI pre-wired to interact with your specific program.
+- **Unit Tests:** TypeScript tests covering the core logic.
 
-Each generated project comes fully configured with:
+---
 
-*   **Smart Contracts:** `programs/` contains the Anchor program in Rust.
-*   **Tests:** `tests/` includes TypeScript tests using Mocha/Chai.
-*   **Frontend:** `app/` is a Next.js frontend pre-wired to interact with your dApp.
-*   **Configuration:** `Anchor.toml` and `package.json` are set up and ready to go.
+## 🧪 Pillar 2: The Integration Test Suite
 
-## Getting Started with Your New Project
+Unit tests aren't enough. Use our **Integration Relayer** to test your program against real-world conditions without deploying to Devnet.
 
-Once your project is generated, follow these steps:
+Run this inside **any** Anchor project (even ones you didn't create with sol-scaffold):
 
-1.  **Navigate to the project directory:**
-    ```bash
-    cd <project-name>
-    ```
+```bash
+sol-scaffold integration
+```
 
-2.  **Build the Anchor program:**
-    ```bash
-    anchor build
-    ```
+### Features
+*   **Mainnet Forking:** Clone the state of real accounts and programs from Mainnet Beta to your local validator.
+*   **Protocol Mocks:** Automatically download and load binaries for **Serum**, **Raydium**, **Pyth**, and **Metaplex** to test composability.
+*   **The Relayer:** A TypeScript harness that manages the local validator lifecycle for you.
 
-3.  **Deploy to your local validator:**
-    Make sure `solana-test-validator` is running in a separate terminal.
-    ```bash
-    anchor deploy
-    ```
+**Run your integration tests:**
+```bash
+npm run test:int
+```
 
-4.  **Run the tests:**
-    ```bash
-    anchor test
-    ```
+---
 
-5.  **Start the frontend:**
-    ```bash
-    cd app
-    npm install
-    npm run dev
-    ```
+## 🧰 Pillar 3: Developer Utilities
+
+Helper commands to save you time.
+
+*   **`sol-scaffold sync`**
+    *   *Problem:* You build your program, and the Program ID changes. You have to update `lib.rs`, `Anchor.toml`, and your frontend config.
+    *   *Solution:* Run `sync` to automatically propagate the new ID to all those files.
+
+*   **`sol-scaffold clean`**
+    *   *Problem:* Rust `target/` directories and `node_modules` take up GBs of space.
+    *   *Solution:* Run `clean` to recursively wipe build artifacts from your project.
+
+*   **`sol-scaffold list`**
+    *   See all available blueprints and their descriptions.
+
+---
 
 ## Contributing
 
-Contributions are welcome!
-
-- If you have a feature request or bug report, please [open an issue](https://github.com/gemini/sol-scaffold/issues).
-- If you would like to contribute code, please open a [pull request](https://github.com/gemini/sol-scaffold/pulls).
+We love open source!
+- **Issues:** Found a bug? [Open an issue](https://github.com/gemini/sol-scaffold/issues).
+- **PRs:** Want to add a new blueprint (e.g., NFT Marketplace)? Submit a PR!
